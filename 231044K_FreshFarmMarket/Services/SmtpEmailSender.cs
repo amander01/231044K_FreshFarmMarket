@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,30 +9,27 @@ namespace _231044K_FreshFarmMarket.Services
     public class SmtpEmailSender : IEmailSender
     {
         private readonly IConfiguration _config;
+        private readonly ILogger<SmtpEmailSender> _logger;
 
-        public SmtpEmailSender(IConfiguration config)
+        public SmtpEmailSender(IConfiguration config, ILogger<SmtpEmailSender> logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            // ✅ Validate TO email
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentNullException(nameof(email), "Recipient email cannot be empty.");
 
-            // ✅ Read SMTP settings safely
             var host = _config["Smtp:Host"];
             var portStr = _config["Smtp:Port"];
             var enableSslStr = _config["Smtp:EnableSsl"];
-
             var userName = _config["Smtp:UserName"];
             var password = _config["Smtp:Password"];
-
             var fromEmail = _config["Smtp:FromEmail"];
             var fromName = _config["Smtp:FromName"] ?? "FreshFarmMarket";
 
-            // ✅ Validate FROM email (THIS is what caused your crash)
             if (string.IsNullOrWhiteSpace(fromEmail))
                 throw new ArgumentNullException("Smtp:FromEmail", "Smtp:FromEmail is missing in appsettings.json.");
 
@@ -45,25 +43,36 @@ namespace _231044K_FreshFarmMarket.Services
             if (!string.IsNullOrWhiteSpace(enableSslStr) && bool.TryParse(enableSslStr, out var parsedSsl))
                 enableSsl = parsedSsl;
 
-            using var message = new MailMessage
+            try
             {
-                From = new MailAddress(fromEmail, fromName),
-                Subject = subject ?? "",
-                Body = htmlMessage ?? "",
-                IsBodyHtml = true
-            };
+                using var message = new MailMessage
+                {
+                    From = new MailAddress(fromEmail, fromName),
+                    Subject = subject ?? string.Empty,
+                    Body = htmlMessage ?? string.Empty,
+                    IsBodyHtml = true
+                };
 
-            message.To.Add(new MailAddress(email));
+                message.To.Add(new MailAddress(email));
 
-            using var client = new SmtpClient(host, port)
+                using var client = new SmtpClient(host, port)
+                {
+                    EnableSsl = enableSsl,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(userName, password)
+                };
+
+                await client.SendMailAsync(message);
+            }
+            catch (Exception ex)
             {
-                EnableSsl = enableSsl,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(userName, password)
-            };
+                // ✅ Log technical details (do NOT expose to user)
+                _logger.LogError(ex, "Failed to send email to {Recipient}. Subject: {Subject}", email, subject);
 
-            await client.SendMailAsync(message);
+                // ✅ Generic message only
+                throw new InvalidOperationException("Unable to send email at the moment. Please try again later.");
+            }
         }
     }
 }
