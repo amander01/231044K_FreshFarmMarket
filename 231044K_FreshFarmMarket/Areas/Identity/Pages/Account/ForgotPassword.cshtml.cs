@@ -51,7 +51,7 @@ namespace _231044K_FreshFarmMarket.Areas.Identity.Pages.Account
             var resetLink = Url.Page(
                 "/Account/ResetPassword",
                 pageHandler: null,
-                values: new { area = "Identity", token = token, email = user.Email },
+                values: new { area = "Identity", token = token, email = HtmlEncoder.Default.Encode(user.Email) },
                 protocol: Request.Scheme
             );
 
