@@ -1,0 +1,69 @@
+﻿@model _231044K_FreshFarmMarket.ViewModels.HomepageViewModel
+@{
+    ViewData["Title"] = "Homepage";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h2 class="fw-bold mb-0">Welcome, @Model.FullName</h2>
+                    <p class="text-muted mb-0">@Model.Email</p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoPath))
+                {
+                    <img src="@Model.PhotoPath"
+                         alt="Profile Photo"
+                         style="width:60px;height:60px;object-fit:cover;border-radius:12px;"
+                         class="border" />
+                }
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-semibold mb-3">Membership Details</h5>
+
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Gender</div>
+                        <div class="col-sm-8">@Model.Gender</div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Mobile No</div>
+                        <div class="col-sm-8">@Model.MobileNo</div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Delivery Address</div>
+                        <div class="col-sm-8">@Model.DeliveryAddress</div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Credit Card</div>
+                        <div class="col-sm-8 fw-semibold">@Model.MaskedCreditCard</div>
+                    </div>
+
+                    <hr />
+
+                    <h6 class="fw-semibold">About Me</h6>
+                    <p class="mb-0">
+                        @if (!string.IsNullOrWhiteSpace(Model.AboutMeSafe))
+                        {
+                            @Html.Raw(Model.AboutMeSafe)
+                        }
+                        else
+                        {
+                            <span class="text-muted">No description provided.</span>
+                        }
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

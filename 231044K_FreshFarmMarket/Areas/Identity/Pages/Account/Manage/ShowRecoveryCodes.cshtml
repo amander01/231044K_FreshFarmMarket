@@ -1,0 +1,32 @@
+﻿@page
+@model _231044K_FreshFarmMarket.Areas.Identity.Pages.Account.Manage.ShowRecoveryCodesModel
+@{
+    ViewData["Title"] = "Recovery codes";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<h3>Recovery codes</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="alert alert-warning mt-3">
+    <strong>Store these recovery codes in a safe place.</strong>
+    <div>If you lose your authenticator device, you can use one of these codes to sign in.</div>
+</div>
+
+@if (Model.RecoveryCodes != null && Model.RecoveryCodes.Length > 0)
+{
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="list-group">
+                @foreach (var code in Model.RecoveryCodes)
+                {
+                    <li class="list-group-item font-monospace">@code</li>
+                }
+            </ul>
+
+            <a class="btn btn-primary mt-3" asp-page="./TwoFactorAuthentication">
+                Back to Two-factor authentication
+            </a>
+        </div>
+    </div>
+}

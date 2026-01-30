@@ -1,0 +1,36 @@
+﻿@page
+@model _231044K_FreshFarmMarket.Areas.Identity.Pages.Account.Manage.TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Two-factor authentication";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<h3>Two-factor authentication</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+@if (Model.Is2faEnabled)
+{
+    <div class="alert alert-success mt-3">
+        ✅ Two-factor authentication is enabled.
+    </div>
+
+    <p>Recovery codes remaining: <strong>@Model.RecoveryCodesLeft</strong></p>
+
+    <form method="post" asp-page-handler="GenerateRecoveryCodes">
+        <button class="btn btn-outline-primary" type="submit">
+            Generate new recovery codes
+        </button>
+    </form>
+
+    <form class="mt-3" method="post" asp-page-handler="Disable2fa">
+        <button class="btn btn-outline-danger" type="submit">Disable 2FA</button>
+    </form>
+}
+else
+{
+    <div class="alert alert-warning mt-3">
+        2FA is not enabled.
+    </div>
+
+    <a class="btn btn-primary" asp-page="./EnableAuthenticator">Enable authenticator</a>
+}

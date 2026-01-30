@@ -1,0 +1,23 @@
+# Visual Studio cache (DO NOT COMMIT)
+.vs/
+
+# Build output
+bin/
+obj/
+
+# User-specific VS files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# ASP.NET Core secrets
+appsettings.Development.json
+secrets.json

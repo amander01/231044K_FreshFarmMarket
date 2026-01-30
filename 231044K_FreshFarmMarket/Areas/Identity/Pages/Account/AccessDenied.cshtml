@@ -1,0 +1,25 @@
+﻿@page
+@model Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal.AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h1 class="fw-bold mb-2">403 - Access Denied</h1>
+                    <p class="text-muted mb-4">
+                        You don’t have permission to access this page.
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-primary" href="/">Go to Homepage</a>
+                        <button class="btn btn-outline-secondary" onclick="history.back()">Go Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

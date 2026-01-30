@@ -1,0 +1,223 @@
+﻿@page
+@model _231044K_FreshFarmMarket.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2 class="mb-3">Membership Registration</h2>
+
+<form id="registerForm" method="post" enctype="multipart/form-data">
+    <hr />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- ✅ reCAPTCHA token (must match Register.cshtml.cs: Input.RecaptchaToken) -->
+    <input type="hidden" asp-for="Input.RecaptchaToken" id="recaptchaToken" />
+
+    <div class="mb-3">
+        <label asp-for="Input.FullName" class="form-label"></label>
+        <input asp-for="Input.FullName" class="form-control" />
+        <span asp-validation-for="Input.FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.CreditCardNo" class="form-label">Credit Card No.</label>
+        <input asp-for="Input.CreditCardNo" class="form-control" />
+        <span asp-validation-for="Input.CreditCardNo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Gender" class="form-label"></label>
+        <select asp-for="Input.Gender" class="form-select">
+            <option value="">-- Select --</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="NA">Prefer not to say</option>
+        </select>
+        <span asp-validation-for="Input.Gender" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.MobileNo" class="form-label">Mobile No.</label>
+        <input asp-for="Input.MobileNo" class="form-control" />
+        <span asp-validation-for="Input.MobileNo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.DeliveryAddress" class="form-label">Delivery Address</label>
+        <input asp-for="Input.DeliveryAddress" class="form-control" />
+        <span asp-validation-for="Input.DeliveryAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label">Email Address</label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Photo" class="form-label">Profile Photo</label>
+        <input asp-for="Input.Photo" class="form-control" type="file" accept=".jpg,.jpeg,.png" />
+        <span asp-validation-for="Input.Photo" class="text-danger"></span>
+        <div class="form-text">Allowed: .jpg/.jpeg/.png</div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.AboutMe" class="form-label">About Me</label>
+        <textarea asp-for="Input.AboutMe" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Input.AboutMe" class="text-danger"></span>
+    </div>
+
+    <!-- Password -->
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" id="pw" />
+            <button class="btn btn-outline-secondary" type="button" id="togglePw">👁</button>
+        </div>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+        <!-- ✅ Password strength UI -->
+        <div class="mt-2 border rounded p-3 bg-light">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="fw-semibold">Password strength</div>
+                <span id="pwLabel" class="badge bg-secondary">-</span>
+            </div>
+
+            <div class="progress mb-2" style="height: 8px;">
+                <div id="pwBar" class="progress-bar" role="progressbar" style="width:0%"></div>
+            </div>
+
+            <ul class="mb-0 small">
+                <li id="ruleLen">At least 12 characters</li>
+                <li id="ruleLow">At least 1 lowercase letter</li>
+                <li id="ruleUp">At least 1 uppercase letter</li>
+                <li id="ruleNum">At least 1 number</li>
+                <li id="ruleSpec">At least 1 special character</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="mb-3">
+        <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" id="pw2" />
+            <button class="btn btn-outline-secondary" type="button" id="togglePw2">👁</button>
+        </div>
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Register</button>
+
+    <div class="mt-3">
+        <a asp-page="./Login">Already have an account? Login</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- ✅ reCAPTCHA v3 script -->
+    <script src="https://www.google.com/recaptcha/api.js?render=@Model.SiteKey"></script>
+
+    <script>
+        // ===========================
+        // Show/Hide password
+        // ===========================
+        document.getElementById("togglePw")?.addEventListener("click", function () {
+            const pw = document.getElementById("pw");
+            if (!pw) return;
+            pw.type = (pw.type === "password") ? "text" : "password";
+        });
+
+        document.getElementById("togglePw2")?.addEventListener("click", function () {
+            const pw2 = document.getElementById("pw2");
+            if (!pw2) return;
+            pw2.type = (pw2.type === "password") ? "text" : "password";
+        });
+
+        // ===========================
+        // Password strength checker
+        // ===========================
+        const pwInput = document.getElementById("pw");
+        const pwBar = document.getElementById("pwBar");
+        const pwLabel = document.getElementById("pwLabel");
+
+        const ruleLen = document.getElementById("ruleLen");
+        const ruleLow = document.getElementById("ruleLow");
+        const ruleUp = document.getElementById("ruleUp");
+        const ruleNum = document.getElementById("ruleNum");
+        const ruleSpec = document.getElementById("ruleSpec");
+
+        function setRule(el, ok) {
+            if (!el) return;
+            el.style.color = ok ? "green" : "black";
+            el.style.fontWeight = ok ? "600" : "400";
+        }
+
+        function updateStrength(pw) {
+            const checks = {
+                len: pw.length >= 12,
+                low: /[a-z]/.test(pw),
+                up: /[A-Z]/.test(pw),
+                num: /[0-9]/.test(pw),
+                spec: /[^A-Za-z0-9]/.test(pw)
+            };
+
+            setRule(ruleLen, checks.len);
+            setRule(ruleLow, checks.low);
+            setRule(ruleUp, checks.up);
+            setRule(ruleNum, checks.num);
+            setRule(ruleSpec, checks.spec);
+
+            const score = Object.values(checks).filter(Boolean).length;
+            const percent = (score / 5) * 100;
+
+            if (pwBar) pwBar.style.width = percent + "%";
+
+            // label
+            let label = "-";
+            let badgeClass = "bg-secondary";
+            if (pw.length === 0) {
+                label = "-";
+            } else if (score <= 2) {
+                label = "Weak";
+                badgeClass = "bg-danger";
+            } else if (score === 3 || score === 4) {
+                label = "Medium";
+                badgeClass = "bg-warning text-dark";
+            } else {
+                label = "Strong";
+                badgeClass = "bg-success";
+            }
+
+            if (pwLabel) {
+                pwLabel.textContent = label;
+                pwLabel.className = "badge " + badgeClass;
+            }
+        }
+
+        pwInput?.addEventListener("input", (e) => updateStrength(e.target.value));
+        updateStrength(pwInput?.value || "");
+
+        // ===========================
+        // reCAPTCHA token injection on submit
+        // ===========================
+        const form = document.getElementById("registerForm");
+        form?.addEventListener("submit", async function (e) {
+            // If grecaptcha is missing, just allow post -> server will show friendly error
+            if (typeof grecaptcha === "undefined") return;
+
+            e.preventDefault();
+
+            try {
+                const token = await grecaptcha.execute("@Model.SiteKey", { action: "register" });
+                document.getElementById("recaptchaToken").value = token;
+                form.submit();
+            } catch {
+                // fallback: submit -> server shows anti-bot error
+                form.submit();
+            }
+        });
+    </script>
+}

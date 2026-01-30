@@ -1,0 +1,21 @@
+﻿@page
+@model _231044K_FreshFarmMarket.Areas.Identity.Pages.Account.Manage.GenerateRecoveryCodesModel
+@{
+    ViewData["Title"] = "Generate recovery codes";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Generating new recovery codes will invalidate all existing codes.</strong>
+    </p>
+</div>
+
+<form method="post">
+    <button class="btn btn-primary" type="submit">Generate</button>
+    <a class="btn btn-outline-secondary" asp-page="./TwoFactorAuthentication">Cancel</a>
+</form>

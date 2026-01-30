@@ -1,0 +1,62 @@
+﻿@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Configure authenticator app";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<p>
+    To use an authenticator app, follow these steps:
+</p>
+
+<ol>
+    <li>
+        Download an authenticator app such as
+        <strong>Microsoft Authenticator</strong> or <strong>Google Authenticator</strong>.
+    </li>
+    <li>
+        Scan the QR code below or manually enter this key:
+        <br />
+        <kbd>@Model.SharedKey</kbd>
+    </li>
+</ol>
+
+<!-- ✅ QR Code container -->
+<div id="qrCode" style="margin: 20px 0;"></div>
+
+<form method="post">
+    <div class="form-floating mb-3">
+        <input asp-for="Input.Code"
+               class="form-control"
+               autocomplete="off"
+               placeholder="Verification Code" />
+        <label asp-for="Input.Code">Verification Code</label>
+        <span asp-validation-for="Input.Code" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- ✅ Load QR Code library -->
+    <script src="~/lib/qrcodejs/qrcode.min.js"></script>
+
+    <!-- ✅ Render QR Code -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var qrElement = document.getElementById("qrCode");
+
+            if (qrElement && "@Model.AuthenticatorUri") {
+                new QRCode(qrElement, {
+                    text: "@Model.AuthenticatorUri",
+                    width: 200,
+                    height: 200
+                });
+            }
+        });
+    </script>
+}
