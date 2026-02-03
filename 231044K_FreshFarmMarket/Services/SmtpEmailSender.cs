@@ -11,6 +11,34 @@ namespace _231044K_FreshFarmMarket.Services
         private readonly IConfiguration _config;
         private readonly ILogger<SmtpEmailSender> _logger;
 
+        private static string RedactEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return string.Empty;
+            }
+
+            var atIndex = email.IndexOf('@');
+            if (atIndex <= 0)
+            {
+                // Not a standard email format; avoid logging raw value.
+                return "[redacted]";
+            }
+
+            var localPart = email.Substring(0, atIndex);
+            var domainPart = email.Substring(atIndex); // includes '@'
+
+            if (localPart.Length <= 1)
+            {
+                return "*"+ domainPart;
+            }
+
+            var visibleFirstChar = localPart[0];
+            var maskedRest = new string('*', localPart.Length - 1);
+
+            return visibleFirstChar + maskedRest + domainPart;
+        }
+
         public SmtpEmailSender(IConfiguration config, ILogger<SmtpEmailSender> logger)
         {
             _config = config;
@@ -60,7 +88,7 @@ namespace _231044K_FreshFarmMarket.Services
             const int maxBodyLength = 10_000;
             if (body.Length > maxBodyLength)
             {
-                _logger.LogWarning("Blocked email body due to excessive length. Recipient={Recipient}, Length={Length}", email, body.Length);
+                _logger.LogWarning("Blocked email body due to excessive length. Recipient={Recipient}, Length={Length}", RedactEmail(email), body.Length);
                 body = "A request was made, but the message content was too large and has been blocked for security reasons.";
             }
 
